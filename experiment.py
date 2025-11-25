@@ -128,7 +128,7 @@ def run_experiment():
     # --- 1. Model Setup ---
     print("Loading model...")
     model_path = "/model-weights/Llama-3.2-3B"
-    device = "cuda"
+    device = "cuda" if torch.cuda.is_available() else "cpu"
 
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     model = AutoModelForCausalLM.from_pretrained(
@@ -149,6 +149,12 @@ def run_experiment():
     print(f"Extracted embeddings shape: {embeddings.shape}") # Should be (700, 3072) for 3B
 
     # --- 4. Dimensionality Reduction (PCA -> 50) ---
+    print("Normalizing and Centering data...")
+    # Center (subtract mean)
+    embeddings = embeddings - embeddings.mean(dim=0)
+    # L2 Normalize (project to sphere)
+    embeddings = torch.nn.functional.normalize(embeddings, p=2, dim=1)
+    
     print("Running PCA reduction to 50 dimensions...")
     pca = PCA(n_components=50)
     # Convert bfloat16 to float32 for sklearn

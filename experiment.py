@@ -128,7 +128,7 @@ def run_experiment():
     # --- 1. Model Setup ---
     print("Loading model...")
     model_path = "/model-weights/Llama-3.2-3B"
-    device = "cuda" if torch.cuda.is_available() 
+    device = "cuda"
 
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     model = AutoModelForCausalLM.from_pretrained(
